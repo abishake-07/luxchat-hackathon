@@ -1,0 +1,69 @@
+services:
+  synapse:
+    container_name: synapse
+    image: custom-synapse:latest
+    restart: always
+    ports:
+      - 8008:8008
+    volumes:
+      - ${WORKDIR}/synapse-data:/data
+      - ${WORKDIR}/custom_synapse:/synapse/synapse
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.2
+
+  luxchat-nginx:
+    container_name: luxchat-nginx
+    image: custom-luxchat:latest
+    restart: always
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - ${WORKDIR}/luxchat-config/config.json:/tmp/element-web-config/config.json
+      - ${WORKDIR}/nginx/config/luxchat.conf:/etc/nginx/conf.d/custom.conf
+      - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.3
+
+  synapse-ngnix:
+    container_name: synapse-nginx
+    image: nginx:latest
+    restart: always
+    ports:
+      - 443:443
+    volumes:
+      - ${WORKDIR}/nginx/config/synapse.conf:/etc/nginx/nginx.conf
+      - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
+      - ${WORKDIR}/nginx/.well-known:/usr/share/nginx/html/.well-known
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.4
+
+
+  #-- Uncomment this block if you want to use a bot on your local setup --#
+  #custom-bot:
+  #  container_name: custom-bot
+  #  image: custom-bot:latest
+  #  depends_on:
+  #    synapse:
+  #      condition: service_started
+  #  ports:
+  #    - 5013:5013
+  #  volumes:
+  #    - ${WORKDIR}/bot/etc_hosts:/etc/hosts:ro
+  #    - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+  #    - ${WORKDIR}/bot/config.ini:/bot/example-bot/config.ini
+  #    - ${WORKDIR}/bot/store:/bot/example-bot/store
+  #  networks:
+  #    luxchat-network:
+  #      ipv4_address: 172.20.0.5
+
+networks:
+  luxchat-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1

@@ -1,0 +1,12 @@
+{
+    "m.homeserver":
+    {
+        "base_url":"https://local.synapse.server:443"
+    },
+    "io.element.e2ee": {
+        "secure_backup_required" : true,
+        "secure_backup_setup_methods":[
+            "passphrase"
+        ]
+    }
+}

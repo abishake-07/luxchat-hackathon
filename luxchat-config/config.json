@@ -1,0 +1,108 @@
+{
+    "default_server_config": {
+        "m.homeserver": {
+            "base_url": "https://local.synapse.server",
+            "server_name": "local.synapse.server"
+        }
+    },
+    "host_for_links": "luxchat.lu",
+    "embedded_pages": {
+        "login_for_welcome": true
+    },
+    "disable_custom_urls": false,
+    "disable_guests": true,
+    "disable_login_language_selector": false,
+    "disable_3pid_login": false,
+    "brand": "Luxchat",
+    "integrations_ui_url": "",
+    "integrations_rest_url": "",
+    "integrations_widgets_urls": [],
+    "bug_report_endpoint_url": "",
+    "uisi_autorageshake_app": "",
+    "default_country_code": "LU",
+    "show_labs_settings": false,
+    "features": {
+        "feature_threadstable": false,
+        "feature_video_rooms": false,
+        "feature_new_device_manager": false
+    },
+    "default_federate": true,
+    "default_theme": "light",
+    "room_directory": {
+        "servers": [
+            "local.synapse.server",
+            "poc.luxchat4pro.lu"
+        ],
+        "services": {
+            "local.synapse.server": "LOCAL",
+            "poc.luxchat4pro.lu" : "HACKATON"
+        }
+    },
+    "alias_list": {
+       "local.synapse.server": "local",
+       "poc.luxchat4pro.lu": "poc"
+    },
+    "enable_presence_by_hs_url": {
+        "https://matrix.org": false,
+        "https://matrix-client.matrix.org": false
+    },
+    "terms_and_conditions_links": [
+        {
+            "url": "https://webcontent.luxchat.lu/app-privacy-policy/",
+            "text": "Privacy Policy"
+        },
+        {
+            "url": "https://webcontent.luxchat.lu/app-terms-and-conditions/",
+            "text": "Terms & Conditions"
+        },
+        {
+            "url": "https://webcontent.luxchat.lu/app-copyright/",
+            "text": "Copyright"
+        }
+    ],
+    "setting_defaults": {
+        "breadcrumbs": true,
+        "CreateSubSpace": false
+    },
+    "jitsi": {
+        "preferred_domain": ""
+    },
+    "element_call": {
+        "url": ""
+    },
+    "map_style_url": "https://vectortiles.geoportail.lu/styles/luxchat/style.json",
+    "desktop_builds": {
+        "available": true,
+        "logo": null,
+        "url": "https://u-download.luxchat.lu/home"
+    },
+    "mobile_builds": {
+        "ios": "https://dev.luxchat.lu/download/mobile/ios",
+        "android": "https://dev.luxchat.lu/download/mobile/android"
+    },
+    "branding": {
+        "welcome_background_url": "themes/element/img/backgrounds/Luxchat4Gpe.png",
+        "auth_header_logo_url": "themes/element/img/logos/Luxchat4Gpe.png",
+        "auth_footer_links": [{ "text": "FAQ", "url": "https://webcontent.luxchat.lu/faq-luxchat/" }]
+    },
+    "update_base_url": "https://u-download.luxchat.lu/home",
+    "show_login_links": true,
+    "show_login_sso_image": false,
+    "can_invite_by_mail": true,
+    "translation_login_server_option": "Which entity to choose ?",
+    "translation_login_help_modal_title": "Luxchat Server Options",
+    "translation_login_help_modal_text": "Pick your server",
+    "translation_login_button": "auth|continue_with_idp",
+    "is_deactivate_enable": true,
+    "has_default_server": true,
+    "protocol": "luxchat",
+    "help_url": "https://webcontent.luxchat.lu/faq-luxchat/",
+    "translation_go_to_input_server_text": "If your company has a dedicated Luxchat server,  you can enter it manually. Please contact your company to obtain the server name.",
+    "translation_go_to_input_server_button": "Enter your company's server name",
+    "translation_input_server_title": "Enter your company's server name",
+    "translation_input_server_text": "Enter the server name provided by your company",
+    "translation_input_help_text": "Please contact your company to obtain the server name.",
+    "translation_input_filed_text": "servername",
+    "translation_input_button_text": "Continue",
+    "translation_sign_in": "Sign in"
+}

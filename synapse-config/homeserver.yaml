@@ -1,0 +1,76 @@
+# Configuration file for Synapse.
+#
+# This is a YAML file: see [1] for a quick introduction. Note in particular
+# that *indentation is important*: all the elements of a list or dictionary
+# should have the same indentation.
+#
+# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#
+# For more information on how to configure Synapse, including a complete accounting of
+# each option, go to docs/usage/configuration/config_documentation.md or
+# https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
+
+alias_creation_rules:
+- action: allow
+  alias: '*'
+  room_id: '*'
+  user_id: '*'
+
+allow_guest_access: false
+allow_public_rooms_over_federation: False
+allow_public_rooms_without_auth: false
+app_service_config_files: []
+autocreate_auto_join_rooms: true
+background_updates: null
+caches:
+  global_factor: 0.5
+  per_cache_factors: null
+cas_config: null
+daemonize: false
+default_room_version: '10'
+enable_metrics: true
+enable_room_list_search: true
+encryption_enabled_by_default_for_room_type: 'all'
+event_cache_size: 100K
+federation_rr_transactions_per_room_per_second: 50
+limit_profile_requests_to_users_who_share_rooms: false
+limit_remote_rooms: null
+max_spider_size: 10M
+max_upload_size: 50M
+
+
+server_name: "local.synapse.server"
+pid_file: /data/homeserver.pid
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
+database:
+  name: sqlite3
+  args:
+    database: /data/homeserver.db
+
+room_list_publication_rules:
+- action: allow
+  alias: '*'
+  room_id: '*'
+  user_id: '*'
+room_prejoin_state: null
+old_signing_keys: null
+recaptcha_private_key: ''
+recaptcha_public_key: ''
+
+log_config: "/data/local.synapse.server.log.config"
+media_store_path: /data/media_store
+registration_shared_secret: "k=8Vo9wY&ew.4vDpjEITtr5iU0V**cApI3gY+3LKgQa0x5m+qo"
+report_stats: true
+macaroon_secret_key: "r;pw*J=RX+ESwp^Ag~x-e&dt+k&M3@p+MjnSV+vKb&y8Xce39:"
+form_secret: "_orenF9fdaEQJTsY&uzT3R9TUqgVzqjTSW*ix4W.eKKERtAV+y"
+signing_key_path: "/data/local.synapse.server.signing.key"
+
+
+# vim:ft=yaml

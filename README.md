@@ -1,93 +1,402 @@
 # Luxchat Hackaton
 
+## Table of content
 
+- [Requirements](#requirements)
+- [Your project](#your-project)
+- [Expected](#expected)
+- [Getting started](#getting-started)
+- [Project types](#project-types)
+    - [Local setup (Client or server feature)](#local-setup-client-or-server-feature)
+        - [Create a user](#create-a-user)
+        - [Edit the client](#edit-the-client)
+        - [Edit the server](#edit-the-server)
+    - [Custom bot](#custom-bot)
+        - [Quickstart](#quickstart)
+        - [Running the example-bot](#running-the-example-bot)
+            - [On a local synapse server](#on-a-local-synapse-server)
+            - [On the hackaton synapse server](#on-the-hackaton-synapse-server)
+        - [Customize the bot](#customize-the-bot)
+        - [Dos and donts](#dos-and-donts)
+        - [More info](#more-info)
+
+## Requirements
+
+Nothing is absolutely required as most of this readme is about how to setup your environment easily.
+
+However, we advise you to have :
+- a linux machine or VM (Ideally based on debian)
+- docker installed
+- git installed
+
+## Your project
+
+This section is dedicated to describing your project.
+You can write a short description of your project, and fill the following table with what parts of the app your worked on (simply add an X under the parts your worked on).
+
+
+| Luxchat (Webclient) | Synapse (server) | Bot |
+|---------------------|------------------|-----|
+|                     |                  |     |
+
+
+## Expected
+
+At the end of the hackaton, you must push your last changes to this repo and tag it with "final". Don't forget to fill the [your project](#your-project) section.
+
+You will then have to demo your project in front of the jury.
+
+For that, you need to have at least one machine in your group that runs your project correctly.
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+To get started with the hackaton, please fork this project and invite your team to work on your fork.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+You can start working right away after reading what's [expected](#expected) at the end of the hackaton.
+However, if you wish to have a little more indications on how to start your project, you are advised to read the rest of this readme.
 
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+The first steps are to complete whatever your project may be :
+Clone this project (or your fork) :
 ```
-cd existing_repo
-git remote add origin https://framagit.org/lxcode/luxchat-hackaton.git
-git branch -M main
-git push -uf origin main
+git clone https://framagit.org/lxcode/luxchat-hackaton
 ```
 
-## Integrate with your tools
+Go into the working dir :
+```
+cd luxchat-hackaton
+```
 
-- [ ] [Set up project integrations](https://framagit.org/lxcode/luxchat-hackaton/-/settings/integrations)
+From there, you will need to take different steps depending on your project :
+- [Custom bot](#custom-bot)
+- [Client feature](#local-setup-client-or-server-feature)
+- [Server feature](#local-setup-client-or-server-feature)
 
-## Collaborate with your team
+## Project types
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Local setup (Client or server feature)
 
-## Test and Deploy
+Make sure you are located in the root of this project (either forked or directly cloned).
 
-Use the built-in continuous integration in GitLab.
+Setup your local environment :
+```bash
+sudo sh scripts/setup.sh
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Run the dockerfile :
+```bash
+docker compose up -d
+```
 
-***
+This will start you a full local setup with a synapse server and a luxchat webclient.
 
-# Editing this README
+Go to the server url and trust the certificate:
+```
+https://local.synapse.server/_matrix/static
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+You will find a page warning you about the self-trusted certificate, simply click advanced and accept to trust it on your browser (the steps depend on the browser).
 
-## Suggestions for a good README
+Connect to your webclient and trust the certificate too:
+```
+https://local.synapse.server:8080/
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+You should be redirected to your local luxchat's login page.
 
-## Name
-Choose a self-explaining name for your project.
+You should have 2 options on your dropdownList, LOCAL and HACKATON.
+Local is your local instance of Synapse, so you will use this server if you want to work on server features.
+Otherwise, you can work on the HACKATON server that is a remote instance set up for the occasion.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+It may take a little when trying to switch the server when your select another option in the dropdown list.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Tips : If working on a Virtualbox VM, you can use the "shared folder" option to be able to update your code automatically on your vm.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+#### Create a user
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+First, let's create a user so that you can connect to your local luxchat once you finish setting up.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```
+sudo docker exec -it synapse register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://localhost:8008
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+#### Edit the client
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Now that you have a client running, you would maybe like to know how to edit the client.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+To edit the client, you can edit anything in the element-web folder, this is the source code that will be built.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+The only exceptions are:
+- The element-web/src/SdkConfig.ts located in the luxchat-config/SdkConfig.ts
+- The element-web/deltas/strings located in the luxchat-config/translations
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+So if you want to change your translations or the SdkConfig, work on those instead, or edit the custom-luxchat.dockefile.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+To rebuild after doing some. changes :
+```
+docker build -t custom-luxchat:latest -f custom-luxchat.dockerfile .
+```
 
-## License
-For open source projects, say how it is licensed.
+Make sure you restart your docker compose after each rebuild.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+#### Edit the server
+
+You should have a copy of the source code with the built rust sdk in the custom_synapse folder, you can edit it from this folder.
+
+When doing changes, you don't need to rebuild the image, simply restart your docker compose.
+
+
+### Custom bot
+
+Please make sure you are located in the root of this project (either forked or directly cloned).
+
+#### Quickstart
+
+Download the tar of the framework :
+```bash
+sudo sh scripts/setup-bot.sh
+```
+You should now have a "bot" folder 
+
+In this folder, you should find two folders :
+- luxchatbot : the framework for the bot
+- example-bot : an example bot made for demoing what the framework can do.
+
+First, we'll try to run the example-bot, to understand how to configure and run a bot.
+
+#### Running the example-bot
+
+All bots are configured using a [config.ini file](https://framagit.org/lxcode/luxchatbot#configuration) that contains various information such as the bot's access token, device id, matrix id, etc.
+
+Those are the configs required for an example-bot.
+
+Copy the config.ini.sample:
+```bash
+cp bot/example-bot/config.ini.sample bot/config.ini
+```
+
+Now we'll configure the bot depending on what homeserver you want it to run on.
+
+##### On a local synapse server.
+
+If you want to run your bot locally, please follow the [local setup step](#local-setup-client-or-server-feature) and come back to this part after you created a user and successfully connected to it on the webclient.
+
+Run your local setup :
+```bash
+docker compose up -d
+```
+
+Now, we'll create a user for your bot :
+```bash
+sudo docker exec -it synapse register_new_matrix_user -u bot -p bot -c /data/homeserver.yaml http://localhost:8008
+```
+
+You can create a token/device_id pair with this curl command :
+```bash
+curl --location 'https://local.synapse.server/_matrix/client/r0/login' \
+	--header 'XCustomUserAgent: luxchat4all' \
+	--data '
+{
+    "identifier": {
+        "type": "m.id.user",
+        "user": "bot"
+    },
+    "password": "bot",
+    "type": "m.login.password"
+}'
+```
+
+Expected result :
+```json
+{
+    "user_id":"@bot:local.synapse.server",
+    "access_token":"an_access_token",
+    "home_server":"local.synapse.server",
+    "device_id":"XULFXSUQHH"
+}
+```
+
+You can pick all those information and put them in your example-bot's config.ini to fill your homeserver section.
+
+You will then need to connect on the server using a webclient, using another account than the bot (e.g. the admin account you should have created during the [local setup](#local-setup-client-or-server-feature)).
+
+Create a room and click on the ... -> settings -> advanced.
+Copy the room id and save it somewhere.
+
+Invite the bot in the room (paste this id in the invite field : @bot:local.synapse.server ).
+
+You can then go back to your config file to fill it like the following :
+
+```ini
+[homeserver]
+homeserver = local.synapse.server
+bot_uid = @bot:local.synapse.server
+access_token = youraccesstokenhere
+device_id = yourdeviceIDhere
+
+[config]
+owner_id = @admin:local.synapse.server
+management_room = !yourroomid:local.synapse.server
+bot_name = Example Bot
+command_prefix = !
+proxy =
+start_looper = True
+
+[api]
+api_enabled = True
+api_host = 0.0.0.0
+api_port = 5013
+api_workers = 3
+auth_required = True
+api_password = mysecret
+
+[openweatherapi]
+api_key = not_required_here
+```
+
+Simply replace the management_room and homeserver section if it's not done.
+
+OPTIONAL : If you want to test the "meteo" command, create an account on https://openweathermap.org/ and put the api_key in the openweatherapi.api_key field.
+
+You can now build your bot's docker image :
+```bash
+docker build -t custom-bot:latest -f bot/example-bot/example-bot.dockerfile ./bot
+```
+
+The first build takes a lot of time, but it should be shorter in the future.
+
+Finally, uncomment this block in your docker-compose.yml:
+```docker
+custom-bot:
+    container_name: custom-bot
+    image: custom-bot:latest
+    depends_on:
+      synapse:
+        condition: service_started
+    ports:
+      - 5013:5013
+    volumes:
+      - ${WORKDIR}/bot/etc_hosts:/etc/hosts:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${WORKDIR}/bot/config.ini:/bot/example-bot/config.ini
+      - ${WORKDIR}/bot/store:/bot/example-bot/store
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.5
+```
+
+restart your setup :
+```
+docker compose down
+docker compose up -d
+```
+
+Connect to your account, go to the room you created for the bot, and type "!hello bot"
+
+You should have a response from the bot saying : "Hello, you said : bot"
+
+If your bot's messages have a red shield, don't worry, you can safely ignore it.
+
+You can now move on to [customizing the bot](#customize-the-bot).
+
+##### On the hackaton synapse server
+
+You will need the bot information you should have been provided with, if you don't have any bot information, please ask an organizer.
+
+You should have :
+- The matrix ID of your bot
+- A JWT token for your bot
+
+Set your JWT variable 
+```bash
+botJWT=<your_bot_jwt>
+```
+
+Now generate the bot's access_token and device_id :
+```bash
+curl --location 'https://poc.luxchat4pro.lu/_matrix/client/r0/login'\
+    --header 'XCustomUserAgent: luxchat4all'\
+    --data "{\"type\":\"org.matrix.login.jwt\", \"token\": \"${botJWT}\"}"
+```
+
+Expected result :
+```json
+{
+    "user_id":"@yourbot:poc.luxchat4pro.lu",
+    "access_token":"an_access_token",
+    "home_server":"poc.luxchat4pro.lu",
+    "device_id":"XULFXSUQHH"
+}
+```
+
+Take all those info and fill out this config.ini and save it to bot/config.ini :
+```ini
+[homeserver]
+homeserver = poc.luxchat4pro.lu
+bot_uid = your_bot_id_here
+access_token = youraccesstokenhere
+device_id = yourdeviceIDhere
+
+[config]
+owner_id = your_user_id_here
+management_room = !yourroomid:poc.luxchat4pro.lu
+bot_name = Example Bot
+command_prefix = !
+proxy =
+start_looper = True
+
+[api]
+api_enabled = True
+api_host = 0.0.0.0
+api_port = 5013
+api_workers = 3
+auth_required = True
+api_password = mysecret
+
+[openweatherapi]
+api_key = not_required_here
+```
+
+OPTIONAL : If you want to test the "meteo" command, create an account on https://openweathermap.org/ and put the api_key in the openweatherapi.api_key field.
+
+Now, it's time to run the bot
+
+Build the image
+```bash
+docker build -t custom-bot:latest -f bot/example-bot/example-bot.dockerfile ./bot
+```
+
+Run the bot
+```bash
+docker run -it --rm \
+    -v bot/config.ini:/bot/example-bot/config.ini \
+    -v bot/store:/bot/example-bot/store \
+    custom-bot
+```
+
+Connect to your account, go to the room you created for the bot, and type "!hello bot"
+
+You should have a response from the bot saying : "Hello, you said : bot"
+
+If your bot's messages have a red shield, don't worry, you can safely ignore it.
+
+You can now move on to [customizing the bot](#customize-the-bot).
+
+#### Customize the bot
+
+You can now rename the example-bot folder to whatever name you want to give your bot, edit your docker-compose.yml or your docker command and start to work on the code.
+
+To rebuild your bot's image after your changes :
+```bash
+docker build -t custom-bot:latest -f bot/example-bot/example-bot.dockerfile ./bot
+```
+
+You don't have to change the store or config.ini location or name, and should be able to keep the same config.ini connection information, although you may need to change other config elements such as the display name or remove the openweatherapi section.
+
+#### Dos and donts
+
+- Don't mix access_tokens and device_ids (e.g. using an access token with a device id generated for another access toekn), they are linked and shouldn't be mixed.
+- Don't use the same access_token/device_id pair for multiple instances of the bot (get one pair for each member of the team, otherwise cryptography will not work and your bot won't be able to interact with the server).
+
+#### More info
+
+For more info on how to build, run, or edit a custom bot, you can find documentation in [the framework's readme](https://framagit.org/lxcode/luxchatbot/-/blob/main/README.md?ref_type=heads).

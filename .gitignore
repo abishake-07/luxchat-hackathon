@@ -1,0 +1,10 @@
+synapse-data
+config.ini
+luxchatbot.tar.gz
+luxchat.tar.gz
+store
+luxchatbot
+
+.venv
+venv
+node_modules
