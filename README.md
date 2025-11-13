@@ -70,8 +70,15 @@ From there, you will need to take different steps depending on your project :
 - [Custom bot](#custom-bot)
 - [Client feature](#local-setup-client-or-server-feature)
 - [Server feature](#local-setup-client-or-server-feature)
+- [Android or IOS feature](#android-or-ios-feature)
 
 ## Project types
+
+### Android or IOS feature
+
+If you want to work on the android or IOS apps, you can find the code from these repos :
+- https://repo.luxchat4gov.lu/src-ios/
+- https://repo.luxchat4gov.lu/src-android/
 
 ### Local setup (Client or server feature)
 
