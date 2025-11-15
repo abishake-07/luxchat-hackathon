@@ -1,0 +1,2 @@
+matrix-nio[e2e]==0.20.2
+requests==2.31.0

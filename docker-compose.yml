@@ -1,13 +1,12 @@
 services:
   synapse:
     container_name: synapse
-    image: custom-synapse:latest
+    image: matrixdotorg/synapse:latest
     restart: always
     ports:
       - 8008:8008
     volumes:
       - ${WORKDIR}/synapse-data:/data
-      - ${WORKDIR}/custom_synapse:/synapse/synapse
     networks:
       luxchat-network:
         ipv4_address: 172.20.0.2
@@ -43,22 +42,36 @@ services:
 
 
   #-- Uncomment this block if you want to use a bot on your local setup --#
-  #custom-bot:
-  #  container_name: custom-bot
-  #  image: custom-bot:latest
-  #  depends_on:
-  #    synapse:
-  #      condition: service_started
-  #  ports:
-  #    - 5013:5013
-  #  volumes:
-  #    - ${WORKDIR}/bot/etc_hosts:/etc/hosts:ro
-  #    - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
-  #    - ${WORKDIR}/bot/config.ini:/bot/example-bot/config.ini
-  #    - ${WORKDIR}/bot/store:/bot/example-bot/store
-  #  networks:
-  #    luxchat-network:
-  #      ipv4_address: 172.20.0.5
+  # custom-bot:
+  #   container_name: custom-bot
+  #   image: custom-bot:latest
+  #   depends_on:
+  #     synapse:
+  #       condition: service_started
+  #   ports:
+  #     - 5013:5013
+  #   volumes:
+  #     - ${WORKDIR}/bot/etc_hosts:/etc/hosts:ro
+  #     - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+  #     - ${WORKDIR}/bot/config.ini:/bot/example-bot/config.ini
+  #     - ${WORKDIR}/bot/store:/bot/example-bot/store
+  #   networks:
+  #     luxchat-network:
+  #       ipv4_address: 172.20.0.5
+
+  attendance-bot:
+    container_name: attendance-bot
+    image: attendance-bot:latest
+    depends_on:
+      synapse:
+        condition: service_started
+    volumes:
+      - ${WORKDIR}/simple-bot/etc_hosts:/etc/hosts:ro
+      - ${WORKDIR}/simple-bot/config.ini:/bot/config.ini
+      - ${WORKDIR}/simple-bot/data:/bot/data
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.6
 
 networks:
   luxchat-network:
