@@ -1,0 +1,8 @@
+[homeserver]
+homeserver = http://local.synapse.server:8008
+bot_uid = @spaces-bot:local.synapse.server
+access_token = YOUR_BOT_ACCESS_TOKEN_HERE
+device_id = SPACESBOT
+
+[config]
+management_room = !YOUR_MANAGEMENT_ROOM:local.synapse.server

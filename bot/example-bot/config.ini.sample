@@ -1,0 +1,24 @@
+[homeserver]
+homeserver = homeserver.luxchat4gov.lu
+bot_uid = @mybot:homeserver.luxchat4gov.lu
+access_token = youraccesstokenhere
+device_id = yourdeviceIDhere
+
+[config]
+owner_id = @botowner:homeserver.luxchat4gov.lu
+management_room = !yourroomid:homeserver.luxchat4gov.lu
+bot_name = Example Bot
+command_prefix = !
+proxy = http://proxy.local:proxy_port
+start_looper = True
+
+[api]
+api_enabled = True
+api_host = 127.0.0.1
+api_port = 5013
+api_workers = 3
+auth_required = True
+api_password = #A random 20-chars password will be generated if left empty
+
+[openweatherapi] #This section can be removed if you remove the Meteo part
+api_key = my_api_key
