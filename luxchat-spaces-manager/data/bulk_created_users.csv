@@ -1,0 +1,43 @@
+﻿username,password,display_name,role,level
+diana.davis.p1,2jOnkuKWcc5k,Diana Davis P1,student,P1
+charlie.williams.p1,zEPYOnHBCwgl,Charlie Williams P1,student,P1
+diana.jones.p1,JyLGEvIOxSnw,Diana Jones P1,student,P1
+grace.jones.p1,FS47i6se3n6v,Grace Jones P1,student,P1
+emma.garcia.p1,7bmtImKeZxCz,Emma Garcia P1,student,P1
+bob.smith.p2,ZrPEEfp367hF,Bob Smith P2,student,P2
+grace.miller.p2,VWE0VO58iLyT,Grace Miller P2,student,P2
+alice.smith.p2,aXLfMaWOAfnN,Alice Smith P2,student,P2
+emma.brown.p2,ypuiESowrnOb,Emma Brown P2,student,P2
+charlie.brown.p2,nhWfU6g6KWFV,Charlie Brown P2,student,P2
+bob.johnson.p3,PEyHMhs7h7fr,Bob Johnson P3,student,P3
+emma.johnson.p3,JQDWWOqLypoX,Emma Johnson P3,student,P3
+bob.smith.p3,XDfNaTX9OmUX,Bob Smith P3,student,P3
+henry.miller.p3,QtjUXSCtnb9z,Henry Miller P3,student,P3
+frank.williams.p3,79WK44cB1lil,Frank Williams P3,student,P3
+grace.brown.p4,P3uNvVdPURKN,Grace Brown P4,student,P4
+alice.miller.p4,7tRnV97HMkHR,Alice Miller P4,student,P4
+emma.davis.p4,2KioQI0lZXO4,Emma Davis P4,student,P4
+grace.williams.p4,oMIHfud8BghL,Grace Williams P4,student,P4
+henry.williams.p4,LskekRJBO3Sq,Henry Williams P4,student,P4
+frank.jones.p5,2gjUXhaRiIM1,Frank Jones P5,student,P5
+alice.williams.p5,EAU803NcaQ4o,Alice Williams P5,student,P5
+bob.garcia.p5,O3zodDdWPmBO,Bob Garcia P5,student,P5
+charlie.smith.p5,dS0I8qgMN7IR,Charlie Smith P5,student,P5
+henry.smith.p5,k6rBz5oBwrEk,Henry Smith P5,student,P5
+teacher.henry.brown,B1QQGvHinSWZ,Henry Brown - German Teacher,teacher,German
+teacher.grace.garcia,30dDvlzU6uwn,Grace Garcia - German Teacher,teacher,German
+teacher.diana.jones,Py2xpWzXc0uW,Diana Jones - English Teacher,teacher,English
+teacher.emma.johnson,S4k1CJfwxNKj,Emma Johnson - English Teacher,teacher,English
+teacher.henry.williams,nncjbVB6h0vy,Henry Williams - Luxembourgish Teacher,teacher,Luxembourgish
+teacher.diana.garcia,Chrn1Z4vMVJ0,Diana Garcia - Luxembourgish Teacher,teacher,Luxembourgish
+teacher.frank.davis,dF5WOqbIDLHq,Frank Davis - Math Teacher,teacher,Math
+teacher.grace.williams,K4PuUUKjVt7U,Grace Williams - Math Teacher,teacher,Math
+teacher.henry.smith,EeDlvoNq8x9d,Henry Smith - Arts Teacher,teacher,Arts
+teacher.frank.jones,f7FUM2bwljSx,Frank Jones - Arts Teacher,teacher,Arts
+teacher.alice.johnson,H49gq1z8luBs,Alice Johnson - PE Teacher,teacher,PE
+teacher.grace.williams,wjTxR2pjIfcc,Grace Williams - PE Teacher,teacher,PE
+parent.alice.smith,E6fGTWN1Mtzk,Alice Smith - Parent,parent,
+parent.diana.garcia,uZ8BhNRIc9ux,Diana Garcia - Parent,parent,
+parent.bob.williams,GnkdaX6cme1w,Bob Williams - Parent,parent,
+parent.grace.garcia,1HmFUWiOjvAl,Grace Garcia - Parent,parent,
+parent.diana.johnson,kloBATVve57X,Diana Johnson - Parent,parent,

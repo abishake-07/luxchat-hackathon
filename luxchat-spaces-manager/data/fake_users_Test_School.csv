@@ -1,0 +1,19 @@
+username,password,display_name,role,level,subject
+peter.williams.p1,tsovN6fBqfwE,Peter Williams,student,P1,
+bob.brown.p1,mLjYPg9lebag,Bob Brown,student,P1,
+frank.johnson.p1,m0GqvsvqJnFg,Frank Johnson,student,P1,
+grace.johnson.p1,LhacewSoRduI,Grace Johnson,student,P1,
+bob.smith.p1,Pt9q5ndwxhNL,Bob Smith,student,P1,
+charlie.rodriguez.p2,Qe0LBC15cdju,Charlie Rodriguez,student,P2,
+sam.rodriguez.p2,ERmqPhcI1nL7,Sam Rodriguez,student,P2,
+charlie.smith.p2,i9cNUaKbCsp6,Charlie Smith,student,P2,
+bob.miller.p2,cg7qcfi8uCWn,Bob Miller,student,P2,
+alice.martinez.p2,C62lFDc41CY4,Alice Martinez,student,P2,
+teacher.noah.williams,1Tuv7ompSdYY,Noah Williams (German),teacher,,German
+teacher.quinn.miller,3LrnYZdASHXN,Quinn Miller (Luxembourgish),teacher,,Luxembourgish
+teacher.olivia.garcia,RzIGuS6OQM3N,Olivia Garcia (Luxembourgish),teacher,,Luxembourgish
+teacher.grace.davis,hAbCnHZu5IzA,Grace Davis (German),teacher,,German
+teacher.quinn.rodriguez,EvEWmw9339In,Quinn Rodriguez (German),teacher,,German
+parent.charlie.brown,4Crnu4jJQiAW,Charlie Brown (Parent),parent,,
+parent.tina.rodriguez,hqnNg5suzzcu,Tina Rodriguez (Parent),parent,,
+parent.peter.garcia,PUzbdszzkpNq,Peter Garcia (Parent),parent,,
