@@ -42,6 +42,15 @@ FUNDAMENTAL_SUBJECTS = {
     }
 }
 
+# Primary Education subject templates (P1-P5)
+PRIMARY_SUBJECTS = {
+    "P1": ["German", "English", "Luxembourgish", "Mathematics", "Arts", "Physical Education"],
+    "P2": ["German", "English", "Luxembourgish", "Mathematics", "Arts", "Physical Education"],
+    "P3": ["German", "English", "Luxembourgish", "Mathematics", "Arts", "Sciences"],
+    "P4": ["German", "English", "Luxembourgish", "Mathematics", "Arts", "Sciences"],
+    "P5": ["German", "English", "Luxembourgish", "Mathematics", "Arts", "Sciences"]
+}
+
 
 class SpacesDatabase:
     """Manages SQLite database for spaces and rooms"""
@@ -590,6 +599,116 @@ class SpacesManagerBot:
         
         await self.send_message(room_id, response)
     
+    async def setup_primary_school(self, school_name: str, room_id: str):
+        """Set up Primary Education structure (P1-P5 with 6 subjects each)"""
+        await self.send_message(room_id, f"🏫 Setting up Primary School: {school_name}...")
+        await self.send_message(room_id, "Creating 5 primary levels with 6 subjects each (30 rooms total)...")
+        
+        # Create root school space
+        root_space_id = await self.create_space(
+            name=school_name,
+            topic=f"Primary Education - {school_name}"
+        )
+        
+        if not root_space_id:
+            await self.send_message(room_id, "❌ Failed to create root space")
+            return
+        
+        # Invite admin to root space
+        await self.invite_admin(root_space_id)
+        
+        self.db.add_space(root_space_id, school_name, "school")
+        self.db.add_school(root_space_id, school_name, "primary", root_space_id)
+        
+        # Create P1-P5 levels
+        for level_name, subjects in PRIMARY_SUBJECTS.items():
+            level_space_id = await self.create_space(
+                name=level_name,
+                topic=f"Primary Level {level_name}",
+                parent_space_id=root_space_id
+            )
+            
+            if not level_space_id:
+                continue
+            
+            # Invite admin to level space
+            await self.invite_admin(level_space_id)
+            
+            # Store with primary_level instead of cycle/year
+            self.db.add_space(level_space_id, level_name, "primary_level", root_space_id)
+            
+            # Create subject rooms for this level
+            for subject in subjects:
+                subject_room_id = await self.create_room(
+                    name=f"{subject}",
+                    topic=f"{subject} - {level_name}",
+                    parent_space_id=level_space_id
+                )
+                
+                if subject_room_id:
+                    # Invite admin to subject room
+                    await self.invite_admin(subject_room_id)
+                    self.db.add_room(subject_room_id, subject, subject, level_space_id)
+        
+        # Create Administration space
+        admin_space_id = await self.create_space(
+            name="Administration",
+            topic="School administration and staff",
+            parent_space_id=root_space_id
+        )
+        
+        if admin_space_id:
+            await self.invite_admin(admin_space_id)
+            self.db.add_space(admin_space_id, "Administration", "admin", root_space_id)
+            
+            # Create admin rooms
+            room_id_temp = await self.create_room("Teachers' Room", "Staff communication", admin_space_id)
+            if room_id_temp:
+                await self.invite_admin(room_id_temp)
+            room_id_temp = await self.create_room("School Announcements", "Official announcements", admin_space_id)
+            if room_id_temp:
+                await self.invite_admin(room_id_temp)
+            room_id_temp = await self.create_room("Bot Management", "Bot commands", admin_space_id)
+            if room_id_temp:
+                await self.invite_admin(room_id_temp)
+        
+        # Create Parents space
+        parents_space_id = await self.create_space(
+            name="Parents",
+            topic="Parent communication",
+            parent_space_id=root_space_id
+        )
+        
+        if parents_space_id:
+            await self.invite_admin(parents_space_id)
+            self.db.add_space(parents_space_id, "Parents", "parents", root_space_id)
+            
+            # Create parent rooms
+            room_id_temp = await self.create_room("Parent-Teacher Communication", "General communication", parents_space_id)
+            if room_id_temp:
+                await self.invite_admin(room_id_temp)
+            room_id_temp = await self.create_room("Events & Meetings", "School events", parents_space_id)
+            if room_id_temp:
+                await self.invite_admin(room_id_temp)
+        
+        # Send completion message
+        response = f"✅ **{school_name} Created!**\n\n"
+        response += f"Root Space: {root_space_id}\n\n"
+        response += "Structure:\n"
+        response += "🏫 Primary School\n"
+        response += "  ├── 📚 P1 (6 subjects)\n"
+        response += "  ├── 📚 P2 (6 subjects)\n"
+        response += "  ├── 📚 P3 (6 subjects)\n"
+        response += "  ├── 📚 P4 (6 subjects)\n"
+        response += "  ├── 📚 P5 (6 subjects)\n"
+        response += "  ├── 👥 Administration (3 rooms)\n"
+        response += "  └── 👨‍👩‍👧‍👦 Parents (2 rooms)\n\n"
+        response += "**Total:** 5 levels, 30 subject rooms, 5 admin/parent rooms = 35+ rooms!\n\n"
+        response += "Subjects per level: " + ", ".join(PRIMARY_SUBJECTS["P1"]) + "\n\n"
+        response += "Check your Matrix client's space list to explore the hierarchy."
+        
+        await self.send_message(room_id, response)
+    
     async def message_callback(self, room: MatrixRoom, event: RoomMessageText):
         """Handle incoming messages"""
         # Ignore own messages
@@ -607,6 +726,9 @@ class SpacesManagerBot:
         # Commands
         if message.startswith("!setup_fundamental_school"):
             await self.handle_setup_fundamental_school(room.room_id, message)
+        
+        elif message.startswith("!setup_primary_school"):
+            await self.handle_setup_primary_school(room.room_id, message)
         
         elif message.startswith("!delete_school"):
             await self.handle_delete_school(room.room_id, message)
@@ -631,6 +753,18 @@ class SpacesManagerBot:
         school_name = parts[1].strip().strip('"').strip("'")
         
         await self.setup_fundamental_school(school_name, room_id)
+    
+    async def handle_setup_primary_school(self, room_id: str, message: str):
+        """Handle !setup_primary_school command"""
+        parts = message.split(maxsplit=1)
+        if len(parts) < 2:
+            await self.send_message(room_id, 'Usage: `!setup_primary_school "School Name"`')
+            return
+        
+        # Extract school name (remove quotes if present)
+        school_name = parts[1].strip().strip('"').strip("'")
+        
+        await self.setup_primary_school(school_name, room_id)
     
     async def handle_delete_school(self, room_id: str, message: str):
         """Handle !delete_school command"""
@@ -717,18 +851,27 @@ class SpacesManagerBot:
 📚 **Luxchat Spaces Manager Bot**
 
 **School Management:**
-• `!setup_fundamental_school "School Name"` - Create complete fundamental school
+• `!setup_fundamental_school "School Name"` - Create Fundamental school (Cycles 1-4)
+• `!setup_primary_school "School Name"` - Create Primary school (P1-P5)
 • `!delete_school "School Name"` - Delete a school (bot leaves all spaces/rooms)
 • `!list_schools` - Show all schools in database
 
-**What Gets Created:**
-🏫 Complete school hierarchy with:
+**School Types:**
+
+**Fundamental School** 🎓 (Luxembourg system)
   - 4 Cycles (ages 3-12)
   - 9 Years total
   - 81 subject rooms
-  - Administration space (3 rooms)
-  - Parents space (2 rooms)
+  - Administration + Parents spaces
   - **Total: ~102 entities**
+
+**Primary School** 📚 (P1-P5)
+  - 5 Primary levels (P1-P5)
+  - 6 subjects per level
+  - 30 subject rooms total
+  - Administration + Parents spaces
+  - **Total: 42 entities**
+  - Subjects: German, English, Luxembourgish, Mathematics, Arts, PE/Sciences
 
 **Deletion:**
 When you delete a school, the bot:

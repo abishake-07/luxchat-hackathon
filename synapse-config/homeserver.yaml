@@ -38,6 +38,62 @@ limit_remote_rooms: null
 max_spider_size: 10M
 max_upload_size: 50M
 
+# Rate limiting configuration - increased for bot operations
+rc_message:
+  per_second: 100
+  burst_count: 200
+
+rc_registration:
+  per_second: 10
+  burst_count: 30
+
+rc_login:
+  address:
+    per_second: 10
+    burst_count: 30
+  account:
+    per_second: 10
+    burst_count: 30
+  failed_attempts:
+    per_second: 5
+    burst_count: 10
+
+rc_admin_redaction:
+  per_second: 10
+  burst_count: 50
+
+rc_joins:
+  local:
+    per_second: 10
+    burst_count: 50
+  remote:
+    per_second: 10
+    burst_count: 50
+
+rc_invites:
+  per_room:
+    per_second: 50
+    burst_count: 100
+  per_user:
+    per_second: 50
+    burst_count: 100
+
+# Increase room creation limits significantly for bot operations
+rc_room_creation:
+  per_second: 20
+  burst_count: 50
+
+rc_3pid_validation:
+  per_second: 10
+  burst_count: 30
+
+# Federation rate limiting
+rc_federation:
+  window_size: 1000
+  sleep_limit: 100
+  sleep_delay: 500
+  reject_limit: 500
+  concurrent: 10
 
 server_name: "local.synapse.server"
 pid_file: /data/homeserver.pid

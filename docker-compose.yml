@@ -11,34 +11,35 @@ services:
       luxchat-network:
         ipv4_address: 172.20.0.2
 
-  luxchat-nginx:
-    container_name: luxchat-nginx
-    image: custom-luxchat:latest
-    restart: always
-    ports:
-      - 80:80
-      - 8080:8080
-    volumes:
-      - ${WORKDIR}/luxchat-config/config.json:/tmp/element-web-config/config.json
-      - ${WORKDIR}/nginx/config/luxchat.conf:/etc/nginx/conf.d/custom.conf
-      - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
-    networks:
-      luxchat-network:
-        ipv4_address: 172.20.0.3
+  # Commented out - requires element-web source files
+  # luxchat-nginx:
+  #   container_name: luxchat-nginx
+  #   image: custom-luxchat:latest
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  #     - 8080:8080
+  #   volumes:
+  #     - ${WORKDIR}/luxchat-config/config.json:/tmp/element-web-config/config.json
+  #     - ${WORKDIR}/nginx/config/luxchat.conf:/etc/nginx/conf.d/custom.conf
+  #     - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
+  #   networks:
+  #     luxchat-network:
+  #       ipv4_address: 172.20.0.3
 
-  synapse-ngnix:
-    container_name: synapse-nginx
-    image: nginx:latest
-    restart: always
-    ports:
-      - 443:443
-    volumes:
-      - ${WORKDIR}/nginx/config/synapse.conf:/etc/nginx/nginx.conf
-      - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
-      - ${WORKDIR}/nginx/.well-known:/usr/share/nginx/html/.well-known
-    networks:
-      luxchat-network:
-        ipv4_address: 172.20.0.4
+  # synapse-ngnix:
+  #   container_name: synapse-nginx
+  #   image: nginx:latest
+  #   restart: always
+  #   ports:
+  #     - 443:443
+  #   volumes:
+  #     - ${WORKDIR}/nginx/config/synapse.conf:/etc/nginx/nginx.conf
+  #     - ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro
+  #     - ${WORKDIR}/nginx/.well-known:/usr/share/nginx/html/.well-known
+  #   networks:
+  #     luxchat-network:
+  #       ipv4_address: 172.20.0.4
 
 
   #-- Uncomment this block if you want to use a bot on your local setup --#
@@ -61,6 +62,9 @@ services:
 
   attendance-bot:
     container_name: attendance-bot
+    build:
+      context: ${WORKDIR}/simple-bot
+      dockerfile: Dockerfile
     image: attendance-bot:latest
     depends_on:
       synapse:
@@ -72,6 +76,22 @@ services:
     networks:
       luxchat-network:
         ipv4_address: 172.20.0.6
+
+  spaces-bot:
+    container_name: spaces-bot
+    build:
+      context: ${WORKDIR}/luxchat-spaces-manager
+      dockerfile: Dockerfile
+    depends_on:
+      synapse:
+        condition: service_started
+    volumes:
+      - ${WORKDIR}/simple-bot/etc_hosts:/etc/hosts:ro
+      - ${WORKDIR}/luxchat-spaces-manager/config.ini:/bot/config.ini
+      - ${WORKDIR}/luxchat-spaces-manager/data:/bot/data
+    networks:
+      luxchat-network:
+        ipv4_address: 172.20.0.7
 
 networks:
   luxchat-network:
