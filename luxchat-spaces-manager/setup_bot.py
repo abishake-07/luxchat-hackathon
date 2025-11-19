@@ -1,17 +1,31 @@
 #!/usr/bin/env python3
-"""
-Setup script for Luxembourg Spaces Manager Bot
-Creates the bot user and generates configuration
-"""
+"""Create a new management room"""
+import asyncio
+from nio import AsyncClient
 
-import requests
-import sys
+async def create_management_room():
+    client = AsyncClient('http://local.synapse.server:8008', '@spaces-bot2:local.synapse.server')
+    client.access_token = 'syt_c3BhY2VzLWJvdDI_bprynNHfbQqUBTYZQisZ_3jwQJI'
+    
+    response = await client.room_create(
+        name="Bot Management Room",
+        topic="Space Manager Bot Control Room",
+        invite=['@admin:local.synapse.server']
+    )
+    
+    if hasattr(response, 'room_id'):
+        print("\n" + "=" * 60)
+        print("✅ ROOM CREATED!")
+        print("=" * 60)
+        print(f"\nRoom ID: {response.room_id}")
+        print(f"\nUpdate config.ini:")
+        print(f"management_room = {response.room_id}")
+    else:
+        print(f"Error: {response}")
+    
+    await client.close()
 
-ADMIN_TOKEN = "syt_YWRtaW4_gsRJxUjzwAikbFgQKkeo_0MCXKm"
-HOMESERVER = "http://localhost:8008"
-BOT_USERNAME = "spaces-bot"
-BOT_DISPLAYNAME = "Luxembourg Spaces Manager"
-BOT_PASSWORD = "spaces_bot_secure_password_123"
+asyncio.run(create_management_room())
 
 def create_bot_user():
     """Create the spaces bot user via Synapse Admin API"""

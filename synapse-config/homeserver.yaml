@@ -40,60 +40,60 @@ max_upload_size: 50M
 
 # Rate limiting configuration - increased for bot operations
 rc_message:
-  per_second: 100
-  burst_count: 200
+  per_second: 10000
+  burst_count: 2000
 
 rc_registration:
-  per_second: 10
-  burst_count: 30
+  per_second: 10000
+  burst_count: 30000
 
 rc_login:
   address:
-    per_second: 10
-    burst_count: 30
+    per_second: 10000
+    burst_count: 30000
   account:
-    per_second: 10
-    burst_count: 30
+    per_second: 10000
+    burst_count: 30000
   failed_attempts:
-    per_second: 5
-    burst_count: 10
+    per_second: 50000
+    burst_count: 10000
 
 rc_admin_redaction:
-  per_second: 10
-  burst_count: 50
+  per_second: 10000
+  burst_count: 50000
 
 rc_joins:
   local:
-    per_second: 10
-    burst_count: 50
+    per_second: 10000
+    burst_count: 50000
   remote:
-    per_second: 10
-    burst_count: 50
+    per_second: 10000
+    burst_count: 5000
 
 rc_invites:
   per_room:
-    per_second: 50
-    burst_count: 100
+    per_second: 50000
+    burst_count: 10000
   per_user:
-    per_second: 50
-    burst_count: 100
+    per_second: 50000
+    burst_count: 10000
 
 # Increase room creation limits significantly for bot operations
 rc_room_creation:
-  per_second: 20
-  burst_count: 50
+  per_second: 20000
+  burst_count: 50000
 
 rc_3pid_validation:
-  per_second: 10
-  burst_count: 30
+  per_second: 10000
+  burst_count: 30000
 
 # Federation rate limiting
 rc_federation:
-  window_size: 1000
-  sleep_limit: 100
-  sleep_delay: 500
+  window_size: 100000
+  sleep_limit: 10000
+  sleep_delay: 50000
   reject_limit: 500
-  concurrent: 10
+  concurrent: 1000
 
 server_name: "local.synapse.server"
 pid_file: /data/homeserver.pid

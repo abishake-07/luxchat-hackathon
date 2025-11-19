@@ -102,6 +102,36 @@ class SpacesDatabase:
             )
         ''')
         
+        # Homework table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS homework (
+                homework_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                room_id TEXT NOT NULL,
+                class_name TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                due_date TEXT,
+                assigned_by TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Attendance table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS attendance (
+                attendance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                room_id TEXT NOT NULL,
+                class_name TEXT NOT NULL,
+                student_name TEXT NOT NULL,
+                date TEXT NOT NULL,
+                status TEXT NOT NULL,
+                marked_by TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(class_name, student_name, date)
+            )
+        ''')
+        
         conn.commit()
         conn.close()
         logger.info(f"Database initialized at {self.db_path}")
@@ -186,6 +216,76 @@ class SpacesDatabase:
         
         conn.close()
         return {'spaces': spaces, 'rooms': rooms}
+    
+    def add_homework(self, room_id: str, class_name: str, subject: str, title: str, 
+                     description: str, due_date: str, assigned_by: str) -> bool:
+        """Add homework assignment"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                INSERT INTO homework (room_id, class_name, subject, title, description, due_date, assigned_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (room_id, class_name, subject, title, description, due_date, assigned_by))
+            conn.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Error adding homework: {e}")
+            return False
+        finally:
+            conn.close()
+    
+    def mark_attendance(self, room_id: str, class_name: str, student_name: str, 
+                       date: str, status: str, marked_by: str) -> bool:
+        """Mark student attendance"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                INSERT OR REPLACE INTO attendance 
+                (room_id, class_name, student_name, date, status, marked_by)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (room_id, class_name, student_name, date, status, marked_by))
+            conn.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Error marking attendance: {e}")
+            return False
+        finally:
+            conn.close()
+    
+    def get_attendance(self, class_name: str, date: str) -> List[Tuple]:
+        """Get attendance for a class on a specific date"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                SELECT student_name, status, marked_by, created_at
+                FROM attendance
+                WHERE class_name = ? AND date = ?
+                ORDER BY student_name
+            ''', (class_name, date))
+            results = cursor.fetchall()
+            return results
+        finally:
+            conn.close()
+    
+    def get_homework_list(self, class_name: str, limit: int = 10) -> List[Tuple]:
+        """Get recent homework for a class"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                SELECT homework_id, subject, title, description, due_date, assigned_by, created_at
+                FROM homework
+                WHERE class_name = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+            ''', (class_name, limit))
+            results = cursor.fetchall()
+            return results
+        finally:
+            conn.close()
 
 
 class SpacesManagerBot:
@@ -739,6 +839,27 @@ class SpacesManagerBot:
         elif message.startswith("!list_schools"):
             await self.handle_list_schools(room.room_id)
         
+        elif message.startswith("!show_parent"):
+            await self.handle_show_parent(room.room_id, message)
+        
+        elif message.startswith("!show_children"):
+            await self.handle_show_children(room.room_id, message)
+        
+        elif message.startswith("!class_roster"):
+            await self.handle_class_roster(room.room_id, message)
+        
+        elif message.startswith("!post_homework"):
+            await self.handle_post_homework(room.room_id, message, event.sender)
+        
+        elif message.startswith("!homework_list"):
+            await self.handle_homework_list(room.room_id, message)
+        
+        elif message.startswith("!mark_attendance"):
+            await self.handle_mark_attendance(room.room_id, message, event.sender)
+        
+        elif message.startswith("!view_attendance"):
+            await self.handle_view_attendance(room.room_id, message)
+        
         elif message.startswith("!help"):
             await self.show_help(room.room_id)
     
@@ -845,6 +966,315 @@ class SpacesManagerBot:
         
         await self.send_message(room_id, response)
     
+    async def handle_show_parent(self, room_id: str, message: str):
+        """Show parent of a student: !show_parent <student_name>"""
+        parts = message.split(maxsplit=1)
+        if len(parts) < 2:
+            await self.send_message(room_id, 'Usage: `!show_parent student_name` or `!show_parent @student:server`')
+            return
+        
+        query = parts[1].strip()
+        
+        conn = sqlite3.connect(self.db.db_path)
+        cursor = conn.cursor()
+        
+        # Search by display name or user_id
+        if query.startswith('@'):
+            cursor.execute("""
+                SELECT ps.parent_user_id, ps.student_user_id
+                FROM parent_students ps
+                WHERE ps.student_user_id = ?
+            """, (query,))
+        else:
+            cursor.execute("""
+                SELECT ps.parent_user_id, ps.student_user_id
+                FROM parent_students ps
+                WHERE ps.student_user_id LIKE ?
+            """, (f"%{query}%",))
+        
+        result = cursor.fetchone()
+        conn.close()
+        
+        if not result:
+            await self.send_message(room_id, f"❌ No parent found for: {query}")
+            return
+        
+        parent_id, student_id = result
+        student_name = student_id.split('@')[1].split(':')[0].replace('.', ' ').title()
+        parent_name = parent_id.split('@')[1].split(':')[0].replace('.', ' ').replace('parent ', '').title()
+        
+        response = f"👨‍👩‍👧 **Parent Information**\n\n"
+        response += f"**Student:** {student_name}\n"
+        response += f"**Parent:** {parent_name}\n"
+        response += f"**Parent ID:** {parent_id}\n"
+        
+        await self.send_message(room_id, response)
+    
+    async def handle_show_children(self, room_id: str, message: str):
+        """Show children of a parent: !show_children <parent_name>"""
+        parts = message.split(maxsplit=1)
+        if len(parts) < 2:
+            await self.send_message(room_id, 'Usage: `!show_children parent_name` or `!show_children @parent:server`')
+            return
+        
+        query = parts[1].strip()
+        
+        conn = sqlite3.connect(self.db.db_path)
+        cursor = conn.cursor()
+        
+        if query.startswith('@'):
+            cursor.execute("""
+                SELECT student_user_id
+                FROM parent_students
+                WHERE parent_user_id = ?
+            """, (query,))
+        else:
+            cursor.execute("""
+                SELECT student_user_id
+                FROM parent_students
+                WHERE parent_user_id LIKE ?
+            """, (f"%{query}%",))
+        
+        children = cursor.fetchall()
+        conn.close()
+        
+        if not children:
+            await self.send_message(room_id, f"❌ No children found for parent: {query}")
+            return
+        
+        parent_name = query if not query.startswith('@') else query.split('@')[1].split(':')[0].replace('.', ' ').title()
+        
+        response = f"👨‍👩‍👧 **Children of {parent_name}:**\n\n"
+        for i, (student_id,) in enumerate(children, 1):
+            parts = student_id.split('@')[1].split(':')[0].split('.')
+            student_name = ' '.join(parts[:-1]).title()
+            level = parts[-1].upper()
+            response += f"{i}. {student_name} ({level})\n"
+            response += f"   ID: {student_id}\n"
+        
+        await self.send_message(room_id, response)
+    
+    async def handle_class_roster(self, room_id: str, message: str):
+        """Show class roster with parent info: !class_roster P1"""
+        parts = message.split()
+        if len(parts) < 2:
+            await self.send_message(room_id, 'Usage: `!class_roster P1` (or P2, P3, P4, P5)')
+            return
+        
+        level = parts[1].upper()
+        
+        conn = sqlite3.connect(self.db.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT ps.student_user_id, ps.parent_user_id
+            FROM parent_students ps
+            WHERE ps.student_user_id LIKE ?
+            ORDER BY ps.student_user_id
+        """, (f"%{level}%",))
+        
+        roster = cursor.fetchall()
+        conn.close()
+        
+        if not roster:
+            await self.send_message(room_id, f"❌ No students found for level: {level}")
+            return
+        
+        response = f"📚 **{level} Class Roster ({len(roster)} students)**\n\n"
+        
+        for i, (student_id, parent_id) in enumerate(roster, 1):
+            student_parts = student_id.split('@')[1].split(':')[0].split('.')
+            student_name = ' '.join(student_parts[:-1]).title()
+            
+            parent_parts = parent_id.split('@')[1].split(':')[0].replace('parent.', '').split('.')
+            parent_name = ' '.join(parent_parts).title()
+            
+            response += f"**{i}. {student_name}**\n"
+            response += f"   👨‍👩‍👧 Parent: {parent_name}\n"
+            response += f"   📧 {parent_id}\n\n"
+        
+        await self.send_message(room_id, response)
+    
+    async def handle_post_homework(self, room_id: str, message: str, sender: str):
+        """Post homework: !post_homework P1 Math "Algebra Practice" "Complete exercises 1-10" "2025-11-25" """
+        parts = message.split(maxsplit=1)
+        if len(parts) < 2:
+            await self.send_message(room_id, 
+                'Usage: `!post_homework <class> <subject> "<title>" "<description>" "<due_date>"`\n\n'
+                'Example: `!post_homework P1 Math "Algebra Practice" "Complete exercises 1-10" "2025-11-25"`')
+            return
+        
+        # Parse the command - extract quoted strings and non-quoted words
+        import shlex
+        try:
+            args = shlex.split(parts[1])
+        except ValueError as e:
+            await self.send_message(room_id, f'❌ Error parsing command: {e}\n\nMake sure to use quotes around title, description, and due date.')
+            return
+        
+        if len(args) < 5:
+            await self.send_message(room_id, 
+                '❌ Missing arguments.\n\n'
+                'Usage: `!post_homework <class> <subject> "<title>" "<description>" "<due_date>"`')
+            return
+        
+        class_name = args[0].upper()
+        subject = args[1]
+        title = args[2]
+        description = args[3]
+        due_date = args[4]
+        assigned_by = sender
+        
+        # Add to database
+        success = self.db.add_homework(room_id, class_name, subject, title, description, due_date, assigned_by)
+        
+        if success:
+            # Create formatted message to post in the room
+            homework_msg = f"""
+📝 **New Homework Assignment**
+
+**Class:** {class_name}
+**Subject:** {subject}
+**Title:** {title}
+
+**Description:**
+{description}
+
+**📅 Due Date:** {due_date}
+**👤 Assigned by:** {assigned_by}
+
+---
+_Use `!homework_list {class_name}` to see all assignments_
+"""
+            await self.send_message(room_id, homework_msg)
+            logger.info(f"Homework posted: {class_name} - {subject} - {title}")
+        else:
+            await self.send_message(room_id, "❌ Failed to post homework. Check logs for details.")
+    
+    async def handle_homework_list(self, room_id: str, message: str):
+        """List homework for a class: !homework_list P1"""
+        parts = message.split()
+        if len(parts) < 2:
+            await self.send_message(room_id, 'Usage: `!homework_list <class>`\n\nExample: `!homework_list P1`')
+            return
+        
+        class_name = parts[1].upper()
+        homework_list = self.db.get_homework_list(class_name, limit=10)
+        
+        if not homework_list:
+            await self.send_message(room_id, f"📚 No homework found for {class_name}")
+            return
+        
+        response = f"📚 **Homework for {class_name}** (Last 10)\n\n"
+        
+        for hw_id, subject, title, description, due_date, assigned_by, created_at in homework_list:
+            response += f"**{subject}: {title}**\n"
+            response += f"📅 Due: {due_date}\n"
+            response += f"📝 {description}\n"
+            response += f"_Posted: {created_at[:10]}_\n\n"
+        
+        await self.send_message(room_id, response)
+    
+    async def handle_mark_attendance(self, room_id: str, message: str, sender: str):
+        """Mark attendance: !mark_attendance P1 "John Doe" present 2025-11-18"""
+        parts = message.split(maxsplit=1)
+        if len(parts) < 2:
+            await self.send_message(room_id,
+                'Usage: `!mark_attendance <class> "<student_name>" <status> <date>`\n\n'
+                'Status: present, absent, late, excused\n'
+                'Example: `!mark_attendance P1 "John Doe" present 2025-11-18`')
+            return
+        
+        import shlex
+        try:
+            args = shlex.split(parts[1])
+        except ValueError as e:
+            await self.send_message(room_id, f'❌ Error parsing command: {e}')
+            return
+        
+        if len(args) < 4:
+            await self.send_message(room_id, 
+                '❌ Missing arguments.\n\n'
+                'Usage: `!mark_attendance <class> "<student_name>" <status> <date>`')
+            return
+        
+        class_name = args[0].upper()
+        student_name = args[1]
+        status = args[2].lower()
+        date = args[3]
+        marked_by = sender
+        
+        # Validate status
+        valid_statuses = ['present', 'absent', 'late', 'excused']
+        if status not in valid_statuses:
+            await self.send_message(room_id, f'❌ Invalid status. Use: {", ".join(valid_statuses)}')
+            return
+        
+        # Mark attendance
+        success = self.db.mark_attendance(room_id, class_name, student_name, date, status, marked_by)
+        
+        if success:
+            status_emoji = {
+                'present': '✅',
+                'absent': '❌',
+                'late': '⏰',
+                'excused': '📝'
+            }
+            
+            response = f"{status_emoji.get(status, '📋')} **Attendance Marked**\n\n"
+            response += f"**Student:** {student_name}\n"
+            response += f"**Class:** {class_name}\n"
+            response += f"**Status:** {status.title()}\n"
+            response += f"**Date:** {date}\n"
+            response += f"**Marked by:** {marked_by}"
+            
+            await self.send_message(room_id, response)
+            logger.info(f"Attendance marked: {class_name} - {student_name} - {status}")
+        else:
+            await self.send_message(room_id, "❌ Failed to mark attendance. Check logs for details.")
+    
+    async def handle_view_attendance(self, room_id: str, message: str):
+        """View attendance for a class: !view_attendance P1 2025-11-18"""
+        parts = message.split()
+        if len(parts) < 3:
+            await self.send_message(room_id,
+                'Usage: `!view_attendance <class> <date>`\n\n'
+                'Example: `!view_attendance P1 2025-11-18`')
+            return
+        
+        class_name = parts[1].upper()
+        date = parts[2]
+        
+        attendance = self.db.get_attendance(class_name, date)
+        
+        if not attendance:
+            await self.send_message(room_id, f"📋 No attendance records for {class_name} on {date}")
+            return
+        
+        response = f"📋 **Attendance for {class_name}** - {date}\n\n"
+        
+        status_counts = {'present': 0, 'absent': 0, 'late': 0, 'excused': 0}
+        
+        for student_name, status, marked_by, created_at in attendance:
+            status_emoji = {
+                'present': '✅',
+                'absent': '❌',
+                'late': '⏰',
+                'excused': '📝'
+            }
+            
+            response += f"{status_emoji.get(status, '📋')} **{student_name}** - {status.title()}\n"
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        response += f"\n**Summary:**\n"
+        response += f"✅ Present: {status_counts['present']} | "
+        response += f"❌ Absent: {status_counts['absent']} | "
+        response += f"⏰ Late: {status_counts['late']} | "
+        response += f"📝 Excused: {status_counts['excused']}\n"
+        response += f"**Total:** {len(attendance)} students"
+        
+        await self.send_message(room_id, response)
+    
     async def show_help(self, room_id: str):
         """Show help message"""
         help_text = """
@@ -855,6 +1285,22 @@ class SpacesManagerBot:
 • `!setup_primary_school "School Name"` - Create Primary school (P1-P5)
 • `!delete_school "School Name"` - Delete a school (bot leaves all spaces/rooms)
 • `!list_schools` - Show all schools in database
+
+**Parent-Student Relationships:**
+• `!show_parent <student_name>` - Show parent of a student
+• `!show_children <parent_name>` - Show all children of a parent
+• `!class_roster P1` - Show class roster with parent contacts (P1-P5)
+
+**Homework Management:**
+• `!post_homework <class> <subject> "<title>" "<description>" "<due_date>"` - Post homework
+  Example: `!post_homework P1 Math "Chapter 5" "Complete exercises 1-10" "2025-11-25"`
+• `!homework_list <class>` - List recent homework for a class
+
+**Attendance Tracking:**
+• `!mark_attendance <class> "<student_name>" <status> <date>` - Mark attendance
+  Status: present, absent, late, excused
+  Example: `!mark_attendance P1 "John Doe" present 2025-11-18`
+• `!view_attendance <class> <date>` - View attendance for a class
 
 **School Types:**
 
